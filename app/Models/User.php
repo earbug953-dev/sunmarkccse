@@ -53,6 +53,17 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
+    public function investments()
+    {
+        return $this->hasMany(Investment::class);
+    }
+
+    // All currently active investments
+    public function activeInvestments()
+    {
+        return $this->hasMany(Investment::class)->where('status', 'active');
+    }
+
 
     // Get all transactions belonging to this user
     public function transactions() {

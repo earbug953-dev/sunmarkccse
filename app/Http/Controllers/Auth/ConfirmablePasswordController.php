@@ -38,9 +38,9 @@ class ConfirmablePasswordController extends Controller
         $user = Auth::user();
 
         if ($user->role === "admin") {
-            return redirect()->route('admin.dashboard', absolute: false)->with('success', 'login successful!');
+            return redirect()->route('admin.dashboard')->with('success', 'login successful!');
         }
-        
-        return redirect()->route('user.dashboard', absolute: false)->with('success', 'login successful!');
+
+        return redirect()->route('user.dashboard')->with('success', 'login successful!');
     }
 }

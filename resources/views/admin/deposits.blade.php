@@ -536,7 +536,7 @@
                               data-method="{{ $deposit->payment_method }}"
                               data-date="{{ $deposit->created_at->format('M d, Y g:i A') }}"
                               data-status="{{ ucfirst($deposit->status) }}"
-                              data-proof="{{ $deposit->proof_image ? asset('storage/proofs/' . $deposit->proof_image) : '' }}"
+                              data-proof="{{ $deposit->proof_of_payment ? asset('storage/' . $deposit->proof_of_payment) : '' }}"
                               data-proof-fallback="No proof image uploaded"
                               title="View Details">
                         <i class="bi bi-eye"></i> View
