@@ -436,6 +436,7 @@
     .table{
         bg:var(--dark);
     }
+    .table { --bs-table-bg: transparent; color: rgba(255,255,255,0.85); }
     /* ── ANIMATIONS ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(28px); }

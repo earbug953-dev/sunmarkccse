@@ -1,499 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Reports & Analytics - SUNHILL Admin</title>
-
-  <!-- Bootstrap 5 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
-  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <style>
-    * {
-      transition: all 0.3s ease;
+    * { transition: all 0.3s ease; }
+    body { background: #000; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+
+    .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 260px; background: linear-gradient(180deg,#0a0a0a,#0f0f0f); border-right: 1px solid #222; padding: 1.5rem 1rem; overflow-y: auto; z-index: 1001; }
+    .sidebar-toggle { display: none; position: fixed; top: 1rem; left: 1rem; background: #ef4444; border: none; color: white; padding: .75rem 1rem; border-radius: 8px; font-size: 1.25rem; cursor: pointer; z-index: 1002; }
+    .sidebar-toggle:hover { background: #dc2626; transform: scale(1.05); }
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 1000; }
+    .sidebar-overlay.active { display: block; }
+    .sidebar-brand { font-size: 1.9rem; font-weight: 700; color: #fff; text-decoration: none; display: block; padding: 1.5rem 0 2rem; text-align: center; border-bottom: 1px solid #333; margin-bottom: 1.5rem; }
+    .sidebar-brand span { color: #ef4444; display: block; font-size: .8em; font-weight: 600; margin-top: .5rem; }
+    .nav-link { color: #a0a0a0; padding: .85rem 1.25rem; border-radius: 8px; font-weight: 500; display: flex; align-items: center; gap: 12px; margin: .35rem 0; position: relative; overflow: hidden; }
+    .nav-link::before { content: ''; position: absolute; left: 0; top: 0; width: 4px; height: 100%; background: #ef4444; transform: scaleY(0); transform-origin: top; }
+    .nav-link:hover { background: rgba(239,68,68,.1); color: #fff; padding-left: 1.5rem; }
+    .nav-link:hover::before, .nav-link.active::before { transform: scaleY(1); }
+    .nav-link.active { background: rgba(239,68,68,.15); color: #ef4444; font-weight: 600; }
+    .nav-link i { font-size: 1.15rem; min-width: 24px; }
+    .sidebar-section { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #222; }
+    .sidebar-section-title { font-size: .75rem; text-transform: uppercase; color: #666; font-weight: 700; letter-spacing: 1px; padding: .5rem 1.25rem; margin-bottom: .5rem; }
+    .logout-btn { background: linear-gradient(135deg,rgba(239,68,68,.2),rgba(239,68,68,.05)); border: 1px solid rgba(239,68,68,.3); color: #ef4444; width: 100%; margin-top: 1rem; padding: .85rem 1.25rem; border-radius: 8px; font-weight: 600; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+    .logout-btn:hover { transform: translateX(5px); }
+    .main-content { margin-left: 260px; padding: 2rem; }
+    .sidebar::-webkit-scrollbar { width: 6px; }
+    .sidebar::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+    @media(max-width:992px) { .sidebar { width: 240px; } .main-content { margin-left: 240px; } }
+    @media(max-width:768px) {
+      .sidebar { width: 100%; max-width: 260px; height: 100vh; left: -100%; position: fixed; }
+      .sidebar.active { left: 0; }
+      .main-content { margin-left: 0; padding-top: 4rem; }
+      .sidebar-toggle { display: block; }
+      .nav-link { padding: .75rem 1rem; }
     }
 
-    body {
-      background: #000;
-      color: #e0e0e0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      min-height: 100vh;
-    }
+    .card-dark { background: #111; border: 1px solid #2a2a2a; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,.5); transition: transform .2s; }
+    .card-dark:hover { transform: translateY(-4px); }
+    .stat-icon { font-size: 2.5rem; opacity: .85; }
+    .chart-container { position: relative; height: 320px; width: 100%; }
+    .table-dark thead th { background: #1a1a1a; color: #777; border-bottom: 1px solid #2a2a2a; font-size: .78rem; text-transform: uppercase; letter-spacing: .07em; }
+    .table-dark td { border-color: #1a1a1a; vertical-align: middle; }
+    .table-dark tbody tr:hover td { background: rgba(239,68,68,.03); }
 
-    /* Sidebar */
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      width: 260px;
-      background: linear-gradient(180deg, #0a0a0a 0%, #0f0f0f 100%);
-      border-right: 1px solid #222;
-      padding: 1.5rem 1rem;
-      overflow-y: auto;
-      z-index: 1001;
-      box-shadow: 2px 0 15px rgba(0, 0, 0, 0.5);
-    }
+    .form-control-dark { background: #1a1a1a; border: 1px solid #444; color: #fff; }
+    .form-control-dark:focus { border-color: #ef4444; box-shadow: 0 0 0 .25rem rgba(239,68,68,.2); color: #fff; background: #1a1a1a; }
 
-    /* Sidebar Toggle - Mobile */
-    .sidebar-toggle {
-      display: none;
-      position: fixed;
-      top: 1rem;
-      left: 1rem;
-      background: #ef4444;
-      border: none;
-      color: white;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      font-size: 1.25rem;
-      cursor: pointer;
-      z-index: 1002;
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-    }
+    /* Mini stat inside card */
+    .mini-stat { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 10px; padding: .8rem 1rem; }
+    .mini-stat-label { font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: #444; margin-bottom: .2rem; }
+    .mini-stat-value { font-size: 1.3rem; font-weight: 800; }
 
-    .sidebar-toggle:hover {
-      background: #dc2626;
-      transform: scale(1.05);
-    }
+    /* Plan bar */
+    .plan-bar { height: 8px; background: #1a1a1a; border-radius: 20px; overflow: hidden; margin-top: .4rem; }
+    .plan-bar-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg,#ef4444,#dc2626); }
 
-    .sidebar-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 1000;
-    }
-
-    .sidebar-overlay.active {
-      display: block;
-    }
-
-    .sidebar-brand {
-      font-size: 1.9rem;
-      font-weight: 700;
-      color: #fff;
-      text-decoration: none;
-      display: block;
-      padding: 1.5rem 0 2rem;
-      text-align: center;
-      border-bottom: 1px solid #333;
-      margin-bottom: 1.5rem;
-      background: linear-gradient(135deg, transparent, rgba(239, 68, 68, 0.1));
-      border-radius: 8px;
-    }
-
-    .sidebar-brand span {
-      color: #ef4444;
-      display: block;
-      font-size: 0.8em;
-      font-weight: 600;
-      margin-top: 0.5rem;
-    }
-
-    .nav-link {
-      color: #a0a0a0;
-      padding: 0.85rem 1.25rem;
-      border-radius: 8px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 0.35rem 0;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .nav-link::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 4px;
-      height: 100%;
-      background: #ef4444;
-      transform: scaleY(0);
-      transform-origin: top;
-      transition: transform 0.3s ease;
-    }
-
-    .nav-link:hover {
-      background: rgba(239, 68, 68, 0.1);
-      color: #fff;
-      padding-left: 1.5rem;
-    }
-
-    .nav-link:hover::before {
-      transform: scaleY(1);
-    }
-
-    .nav-link.active {
-      background: rgba(239, 68, 68, 0.15);
-      color: #ef4444;
-      font-weight: 600;
-    }
-
-    .nav-link.active::before {
-      transform: scaleY(1);
-    }
-
-    .nav-link i {
-      font-size: 1.15rem;
-      min-width: 24px;
-    }
-
-    /* Sidebar Sections */
-    .sidebar-section {
-      margin-top: 1.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid #222;
-    }
-
-    .sidebar-section-title {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      color: #666;
-      font-weight: 700;
-      letter-spacing: 1px;
-      padding: 0.5rem 1.25rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .logout-btn {
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.05));
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #ef4444;
-      width: 100%;
-      margin-top: 1rem;
-      padding: 0.85rem 1.25rem;
-      border-radius: 8px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transition: all 0.3s;
-    }
-
-    .logout-btn:hover {
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(239, 68, 68, 0.1));
-      border-color: rgba(239, 68, 68, 0.5);
-      transform: translateX(5px);
-    }
-
-    .main-content {
-      margin-left: 260px;
-      padding: 2rem;
-    }
-
-    /* Scrollbar styling */
-    .sidebar::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .sidebar::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .sidebar::-webkit-scrollbar-thumb {
-      background: #333;
-      border-radius: 3px;
-    }
-
-    .sidebar::-webkit-scrollbar-thumb:hover {
-      background: #444;
-    }
-
-    @media (max-width: 992px) {
-      .sidebar { width: 240px; }
-      .main-content { margin-left: 240px; }
-    }
-
-    @media (max-width: 768px) {
-      .sidebar {
-        width: 100%;
-        max-width: 260px;
-        height: 100vh;
-        left: -100%;
-        position: fixed;
-        border-right: 1px solid #222;
-        border-bottom: none;
-      }
-
-      .sidebar.active {
-        left: 0;
-      }
-
-      .main-content {
-        margin-left: 0;
-        padding-top: 4rem;
-      }
-
-      .sidebar-toggle {
-        display: block;
-      }
-
-      .nav-link {
-        padding: 0.75rem 1rem;
-      }
-    }
-
-    .card-dark {
-      background: #111;
-      border: 1px solid #333;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-      transition: transform 0.25s;
-    }
-
-    .card-dark:hover {
-      transform: translateY(-6px);
-    }
-
-    .stat-icon {
-      font-size: 2.8rem;
-      opacity: 0.85;
-    }
-
-    .chart-container {
-      position: relative;
-      height: 380px;
-      width: 100%;
-    }
-
-    .form-control-dark {
-      background: #1a1a1a;
-      border: 1px solid #444;
-      color: #fff;
-    }
-
-    .form-control-dark:focus {
-      border-color: #ef4444;
-      box-shadow: 0 0 0 0.25rem rgba(239, 68, 68, 0.25);
-      color: #fff;
-      background: #1a1a1a;
-    }
-
-    .table-dark thead th {
-      background: #1a1a1a;
-      color: #ccc;
-      border-bottom: 1px solid #444;
-    }
-
-    .table-dark td {
-      border-color: #333;
-      vertical-align: middle;
-    }
+    /* Rank badges */
+    .rank-1 { background: linear-gradient(135deg,#f59e0b,#d97706); color: #000; }
+    .rank-2 { background: #6b7280; color: #fff; }
+    .rank-3 { background: #92400e; color: #fff; }
   </style>
 </head>
 <body>
 
-<!-- Sidebar Toggle Button -->
-<button class="sidebar-toggle" id="sidebarToggle">
-  <i class="bi bi-list"></i>
-</button>
-
-<!-- Sidebar Overlay (for mobile) -->
+<button class="sidebar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<!-- Sidebar Navigation -->
 <aside class="sidebar" id="sidebar">
-  <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">
-    TESLA <span>Admin</span>
-  </a>
-
+  <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">SUNHILL <span>Admin</span></a>
   <nav>
     <ul class="nav flex-column">
-      <!-- Dashboard -->
-      <li class="nav-item">
-        <a href="{{ route('admin.dashboard') }}" class="nav-link">
-          <i class="bi bi-speedometer2"></i>
-          <span>Dashboard</span>
-        </a>
-      </li>
-
-      <!-- Main Section -->
+      <li><a href="{{ route('admin.dashboard') }}" class="nav-link"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a></li>
       <div class="sidebar-section">
         <div class="sidebar-section-title">Management</div>
-
-        <li class="nav-item">
-          <a href="{{ route('admin.users') }}" class="nav-link">
-            <i class="bi bi-people-fill"></i>
-            <span>Users</span>
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="{{ route('admin.deposits') }}" class="nav-link">
-            <i class="bi bi-currency-dollar"></i>
-            <span>Deposits</span>
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="{{ route('admin.withdrawals') }}" class="nav-link">
-            <i class="bi bi-cash-stack"></i>
-            <span>Withdrawals</span>
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="{{ route('admin.packages') }}" class="nav-link">
-            <i class="bi bi-bag-check"></i>
-            <span>Plans / Packages</span>
-          </a>
-        </li>
+        <li><a href="{{ route('admin.users') }}" class="nav-link"><i class="bi bi-people-fill"></i><span>Users</span></a></li>
+        <li><a href="{{ route('admin.deposits') }}" class="nav-link"><i class="bi bi-currency-dollar"></i><span>Deposits</span></a></li>
+        <li><a href="{{ route('admin.withdrawals') }}" class="nav-link"><i class="bi bi-cash-stack"></i><span>Withdrawals</span></a></li>
+        <li><a href="{{ route('admin.packages') }}" class="nav-link"><i class="bi bi-bag-check"></i><span>Plans / Packages</span></a></li>
       </div>
-
-      <!-- Analytics Section -->
       <div class="sidebar-section">
         <div class="sidebar-section-title">Analytics</div>
-
-        <li class="nav-item">
-          <a href="{{ route('admin.transactions') }}" class="nav-link">
-            <i class="bi bi-receipt"></i>
-            <span>Transactions</span>
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="{{ route('admin.reports') }}" class="nav-link active">
-            <i class="bi bi-graph-up"></i>
-            <span>Reports</span>
-          </a>
-        </li>
+        <li><a href="{{ route('admin.transactions') }}" class="nav-link"><i class="bi bi-receipt"></i><span>Transactions</span></a></li>
+        <li><a href="{{ route('admin.reports') }}" class="nav-link active"><i class="bi bi-graph-up"></i><span>Reports</span></a></li>
       </div>
-
-      <!-- Settings Section -->
       <div class="sidebar-section">
         <div class="sidebar-section-title">System</div>
-
-        <li class="nav-item">
-          <a href="{{ route('admin.settings') }}" class="nav-link">
-            <i class="bi bi-gear-fill"></i>
-            <span>Settings</span>
-          </a>
-        </li>
+        <li><a href="{{ route('admin.settings') }}" class="nav-link"><i class="bi bi-gear-fill"></i><span>Settings</span></a></li>
       </div>
     </ul>
-
-    <!-- Logout Button -->
-    <form method="POST" action="{{ url('/logout') }}" style="display: contents;">
+    <form method="POST" action="{{ url('/logout') }}" style="display:contents">
       @csrf
-      <button type="submit" class="logout-btn" onclick="return confirm('Are you sure you want to logout?')">
-        <i class="bi bi-box-arrow-right"></i>
-        <span>Logout</span>
+      <button type="submit" class="logout-btn" onclick="return confirm('Logout?')">
+        <i class="bi bi-box-arrow-right"></i><span>Logout</span>
       </button>
     </form>
   </nav>
 </aside>
 
-<!-- Main Content -->
 <main class="main-content">
   <div class="container-fluid px-0">
 
-    <!-- Page Header -->
+    {{-- PAGE HEADER --}}
     <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3">
-      <h1 class="display-5 fw-bold mb-0">Reports & Analytics</h1>
-      <div class="d-flex gap-3 align-items-center flex-wrap">
-        <div class="input-group input-group-sm" style="max-width: 100%; min-width: 300px;">
-          <span class="input-group-text bg-dark border-secondary text-white"><i class="bi bi-calendar"></i></span>
-          <input type="date" class="form-control form-control-dark" value="2026-02-01">
-          <span class="input-group-text bg-dark border-secondary text-white">to</span>
-          <input type="date" class="form-control form-control-dark" value="2026-02-24">
-        </div>
-        <button class="btn btn-outline-light btn-sm px-4">
-          <i class="bi bi-download me-2"></i> Export Report
-        </button>
-      </div>
+      <h1 class="display-5 fw-bold mb-0">
+        <i class="bi bi-graph-up me-2 text-danger"></i> Reports & Analytics
+      </h1>
+      <span class="text-secondary">{{ now()->format('F d, Y') }}</span>
     </div>
 
-    <!-- Stats Overview -->
+    {{-- ── OVERVIEW STATS (all real) ── --}}
     <div class="row g-4 mb-5">
       <div class="col-xl-3 col-lg-6 col-md-6">
         <div class="card card-dark text-center p-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="fw-bold mb-0">Total Revenue</h5>
-            <i class="bi bi-currency-dollar stat-icon text-success"></i>
+            <h5 class="fw-bold mb-0" style="font-size:.95rem;">Total Deposits</h5>
+            <i class="bi bi-arrow-down-circle stat-icon text-success"></i>
           </div>
-          <h2 class="display-6 fw-bold mb-1">$6,742,890</h2>
-          <p class="text-success small mb-0">+14.8% this month</p>
+          <h2 class="display-6 fw-bold mb-1 text-success">${{ number_format($totalDeposits,2) }}</h2>
+          <p class="text-success small mb-0">All approved deposits</p>
         </div>
       </div>
-
       <div class="col-xl-3 col-lg-6 col-md-6">
         <div class="card card-dark text-center p-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="fw-bold mb-0">Net Profit</h5>
-            <i class="bi bi-graph-up-arrow stat-icon text-info"></i>
+            <h5 class="fw-bold mb-0" style="font-size:.95rem;">Total Withdrawn</h5>
+            <i class="bi bi-arrow-up-circle stat-icon text-danger"></i>
           </div>
-          <h2 class="display-6 fw-bold mb-1 text-info">$4,128,670</h2>
-          <p class="text-info small mb-0">61.2% margin</p>
+          <h2 class="display-6 fw-bold mb-1 text-danger">${{ number_format($totalWithdrawals,2) }}</h2>
+          <p class="text-danger small mb-0">All approved withdrawals</p>
         </div>
       </div>
-
       <div class="col-xl-3 col-lg-6 col-md-6">
         <div class="card card-dark text-center p-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="fw-bold mb-0">User Growth</h5>
-            <i class="bi bi-people-fill stat-icon text-primary"></i>
+            <h5 class="fw-bold mb-0" style="font-size:.95rem;">Earnings Paid Out</h5>
+            <i class="bi bi-graph-up-arrow stat-icon text-warning"></i>
           </div>
-          <h2 class="display-6 fw-bold mb-1">+1,842</h2>
-          <p class="text-primary small mb-0">New users this month</p>
+          <h2 class="display-6 fw-bold mb-1 text-warning">${{ number_format($totalEarningsPaid,2) }}</h2>
+          <p class="text-warning small mb-0">Investment profits claimed</p>
         </div>
       </div>
-
       <div class="col-xl-3 col-lg-6 col-md-6">
         <div class="card card-dark text-center p-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="fw-bold mb-0">Retention Rate</h5>
-            <i class="bi bi-arrow-repeat stat-icon text-warning"></i>
+            <h5 class="fw-bold mb-0" style="font-size:.95rem;">Total Users</h5>
+            <i class="bi bi-people-fill stat-icon text-info"></i>
           </div>
-          <h2 class="display-6 fw-bold mb-1 text-warning">78.4%</h2>
-          <p class="text-warning small mb-0">30-day retention</p>
+          <h2 class="display-6 fw-bold mb-1 text-info">{{ number_format($totalUsers) }}</h2>
+          <p class="text-info small mb-0">+{{ $newUsersThisMonth }} this month</p>
         </div>
       </div>
     </div>
 
-    <!-- Charts Row -->
+    {{-- SECONDARY STATS --}}
+    <div class="row g-3 mb-5">
+      <div class="col-md-3">
+        <div class="mini-stat">
+          <div class="mini-stat-label">Total Invested</div>
+          <div class="mini-stat-value text-warning">${{ number_format($totalInvested,2) }}</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="mini-stat">
+          <div class="mini-stat-label">Active Plans</div>
+          <div class="mini-stat-value text-success">{{ number_format($activeInvestments) }}</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="mini-stat">
+          <div class="mini-stat-label">Completed Plans</div>
+          <div class="mini-stat-value" style="color:#818cf8;">{{ number_format($completedInvestments) }}</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="mini-stat">
+          <div class="mini-stat-label">Net Balance</div>
+          <div class="mini-stat-value {{ $netProfit >= 0 ? 'text-success' : 'text-danger' }}">
+            ${{ number_format(abs($netProfit),2) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{-- CHARTS ROW --}}
     <div class="row g-4 mb-5">
-      <!-- Revenue vs Withdrawals -->
-      <div class="col-lg-6">
+
+      {{-- Deposits vs Withdrawals Bar Chart --}}
+      <div class="col-lg-7">
         <div class="card card-dark p-4">
           <h5 class="fw-bold mb-4">
-            <i class="bi bi-bar-chart-fill me-2 text-danger"></i> Revenue vs Withdrawals (Last 30 Days)
+            <i class="bi bi-bar-chart-fill me-2 text-danger"></i>
+            Deposits vs Withdrawals vs Earnings (Last 12 Months)
           </h5>
           <div class="chart-container">
-            <canvas id="revenueVsWithdrawalChart"></canvas>
+            <canvas id="revenueChart"></canvas>
           </div>
         </div>
       </div>
 
-      <!-- User Registration Trend -->
-      <div class="col-lg-6">
+      {{-- User Growth Line Chart --}}
+      <div class="col-lg-5">
         <div class="card card-dark p-4">
           <h5 class="fw-bold mb-4">
-            <i class="bi bi-graph-up me-2 text-primary"></i> User Registration Trend
+            <i class="bi bi-people-fill me-2 text-info"></i>
+            User Registrations (Last 12 Months)
           </h5>
           <div class="chart-container">
-            <canvas id="userGrowthChart"></canvas>
+            <canvas id="userChart"></canvas>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Summary Tables -->
-    <div class="row g-4">
-      <!-- Top Depositors -->
-      <div class="col-lg-6">
+    {{-- PLAN POPULARITY + TOP DEPOSITORS --}}
+    <div class="row g-4 mb-5">
+
+      {{-- Plan popularity --}}
+      <div class="col-lg-5">
+        <div class="card card-dark p-4" style="height:100%;">
+          <h5 class="fw-bold mb-4">
+            <i class="bi bi-bag-check me-2 text-warning"></i> Plan Popularity
+          </h5>
+          @php $maxPlanTotal = $planStats->max('total') ?: 1; @endphp
+          @forelse($planStats as $plan)
+            <div style="margin-bottom:1.2rem;">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span style="font-weight:600;font-size:.9rem;">{{ $plan->package->name ?? '—' }}</span>
+                <span style="font-size:.8rem;color:#555;">{{ $plan->count }} investor{{ $plan->count !== 1 ? 's' : '' }} · ${{ number_format($plan->total,2) }}</span>
+              </div>
+              <div class="plan-bar">
+                <div class="plan-bar-fill" style="width:{{ round(($plan->total/$maxPlanTotal)*100) }}%;"></div>
+              </div>
+            </div>
+          @empty
+            <p style="color:#444;">No investment data yet.</p>
+          @endforelse
+        </div>
+      </div>
+
+      {{-- Top Depositors --}}
+      <div class="col-lg-7">
         <div class="card card-dark p-4">
           <h5 class="fw-bold mb-4">
             <i class="bi bi-trophy-fill me-2 text-warning"></i> Top Depositors (All Time)
@@ -502,86 +254,119 @@
             <table class="table table-dark table-hover table-borderless mb-0">
               <thead>
                 <tr>
-                  <th scope="col">Rank</th>
-                  <th scope="col">User</th>
-                  <th scope="col">Total Deposited</th>
-                  <th scope="col">Last Deposit</th>
+                  <th>Rank</th>
+                  <th>User</th>
+                  <th>Total Deposited</th>
+                  <th>Last Deposit</th>
                 </tr>
               </thead>
               <tbody>
+                @forelse($topDepositors as $i => $dep)
+                  <tr>
+                    <td>
+                      <span class="badge rank-{{ $i+1 <= 3 ? $i+1 : '' }} {{ $i+1 > 3 ? 'bg-secondary' : '' }} fw-bold">
+                        {{ $i+1 }}
+                      </span>
+                    </td>
+                    <td>
+                      <div style="font-weight:600;color:#fff;">{{ $dep->user->name ?? '—' }}</div>
+                      <small style="color:#555;">{{ $dep->user->email ?? '—' }}</small>
+                    </td>
+                    <td class="text-success fw-bold">${{ number_format($dep->total,2) }}</td>
+                    <td style="font-size:.82rem;color:#777;">{{ \Carbon\Carbon::parse($dep->last_deposit)->format('d M Y') }}</td>
+                  </tr>
+                @empty
+                  <tr><td colspan="4" class="text-center py-4" style="color:#444;">No deposits yet.</td></tr>
+                @endforelse
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{-- TOP EARNERS + HIGH VALUE TRANSACTIONS --}}
+    <div class="row g-4 mb-5">
+
+      {{-- Top Earners --}}
+      <div class="col-lg-5">
+        <div class="card card-dark p-4">
+          <h5 class="fw-bold mb-4">
+            <i class="bi bi-graph-up-arrow me-2 text-warning"></i> Top Earners (Investment Profits)
+          </h5>
+          <div class="table-responsive">
+            <table class="table table-dark table-hover table-borderless mb-0">
+              <thead>
                 <tr>
-                  <td><span class="badge bg-warning text-dark fw-bold">1</span></td>
-                  <td>John Doe <br><small class="text-secondary">(USER-001247)</small></td>
-                  <td class="text-success fw-bold">$187,420</td>
-                  <td>Feb 20, 2026</td>
+                  <th>Rank</th>
+                  <th>User</th>
+                  <th>Total Earned</th>
                 </tr>
-                <tr>
-                  <td><span class="badge bg-secondary fw-bold">2</span></td>
-                  <td>Jane Smith <br><small class="text-secondary">(USER-001246)</small></td>
-                  <td class="text-success fw-bold">$142,800</td>
-                  <td>Feb 18, 2026</td>
-                </tr>
-                <tr>
-                  <td><span class="badge bg-dark fw-bold border border-secondary">3</span></td>
-                  <td>Michael Brown <br><small class="text-secondary">(USER-001245)</small></td>
-                  <td class="text-success fw-bold">$98,500</td>
-                  <td>Feb 15, 2026</td>
-                </tr>
-                <tr>
-                  <td colspan="4" class="text-center text-muted py-3">
-                    <a href="#" class="text-info small">View full list →</a>
-                  </td>
-                </tr>
+              </thead>
+              <tbody>
+                @forelse($topEarners as $i => $earner)
+                  <tr>
+                    <td>
+                      <span class="badge rank-{{ $i+1 <= 3 ? $i+1 : '' }} {{ $i+1 > 3 ? 'bg-secondary' : '' }} fw-bold">
+                        {{ $i+1 }}
+                      </span>
+                    </td>
+                    <td>
+                      <div style="font-weight:600;color:#fff;">{{ $earner->user->name ?? '—' }}</div>
+                      <small style="color:#555;">{{ $earner->user->email ?? '—' }}</small>
+                    </td>
+                    <td style="color:#f59e0b;font-weight:700;">${{ number_format($earner->total,2) }}</td>
+                  </tr>
+                @empty
+                  <tr><td colspan="3" class="text-center py-4" style="color:#444;">No earnings claimed yet.</td></tr>
+                @endforelse
               </tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- Recent High-Value Transactions -->
-      <div class="col-lg-6">
+      {{-- High Value Transactions --}}
+      <div class="col-lg-7">
         <div class="card card-dark p-4">
           <h5 class="fw-bold mb-4">
-            <i class="bi bi-lightning-charge-fill me-2 text-info"></i> Recent High-Value Transactions
+            <i class="bi bi-lightning-charge-fill me-2 text-info"></i> Highest Value Transactions
           </h5>
           <div class="table-responsive">
             <table class="table table-dark table-hover table-borderless mb-0">
               <thead>
                 <tr>
-                  <th scope="col">TXN ID</th>
-                  <th scope="col">User</th>
-                  <th scope="col">Type</th>
-                  <th scope="col">Amount</th>
-                  <th scope="col">Date</th>
+                  <th>Reference</th>
+                  <th>User</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Date</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td><code class="text-info">TXN-987654321</code></td>
-                  <td>John Doe</td>
-                  <td><span class="badge bg-success">Deposit</span></td>
-                  <td class="text-success fw-bold">+$25,000</td>
-                  <td>Feb 20, 2026</td>
-                </tr>
-                <tr>
-                  <td><code class="text-info">TXN-987654320</code></td>
-                  <td>Jane Smith</td>
-                  <td><span class="badge bg-danger">Withdrawal</span></td>
-                  <td class="text-danger fw-bold">-$18,500</td>
-                  <td>Feb 18, 2026</td>
-                </tr>
-                <tr>
-                  <td><code class="text-info">TXN-987654319</code></td>
-                  <td>Michael Brown</td>
-                  <td><span class="badge bg-success">Deposit</span></td>
-                  <td class="text-success fw-bold">+$15,000</td>
-                  <td>Feb 15, 2026</td>
-                </tr>
-                <tr>
-                  <td colspan="5" class="text-center text-muted py-3">
-                    <a href="#" class="text-info small">View full report →</a>
-                  </td>
-                </tr>
+                @forelse($highValueTxns as $txn)
+                  <tr>
+                    <td><code style="font-size:.75rem;color:#22c55e;">{{ $txn->ref }}</code></td>
+                    <td style="font-weight:600;color:#fff;font-size:.88rem;">{{ $txn->user }}</td>
+                    <td>
+                      @if($txn->type === 'Deposit')
+                        <span class="badge bg-success" style="font-size:.72rem;">Deposit</span>
+                      @else
+                        <span class="badge bg-danger" style="font-size:.72rem;">Withdrawal</span>
+                      @endif
+                    </td>
+                    <td>
+                      @if($txn->type === 'Deposit')
+                        <span class="text-success fw-bold">+${{ number_format($txn->amount,2) }}</span>
+                      @else
+                        <span class="text-danger fw-bold">-${{ number_format($txn->amount,2) }}</span>
+                      @endif
+                    </td>
+                    <td style="font-size:.8rem;color:#555;">{{ $txn->created_at->format('d M Y') }}</td>
+                  </tr>
+                @empty
+                  <tr><td colspan="5" class="text-center py-4" style="color:#444;">No transactions yet.</td></tr>
+                @endforelse
               </tbody>
             </table>
           </div>
@@ -592,118 +377,87 @@
   </div>
 </main>
 
-<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-// Sidebar Toggle Functionality
-const sidebarToggle = document.getElementById('sidebarToggle');
-const sidebar = document.getElementById('sidebar');
-const sidebarOverlay = document.getElementById('sidebarOverlay');
+// Sidebar
+const st=document.getElementById('sidebarToggle'),sb=document.getElementById('sidebar'),ov=document.getElementById('sidebarOverlay');
+st.addEventListener('click',()=>{sb.classList.toggle('active');ov.classList.toggle('active');});
+ov.addEventListener('click',()=>{sb.classList.remove('active');ov.classList.remove('active');});
+document.querySelectorAll('.nav-link').forEach(l=>l.addEventListener('click',()=>{if(window.innerWidth<=768){sb.classList.remove('active');ov.classList.remove('active');}}));
 
-// Toggle sidebar on button click
-sidebarToggle.addEventListener('click', function() {
-  sidebar.classList.toggle('active');
-  sidebarOverlay.classList.toggle('active');
-});
+// ── REAL DATA FROM PHP ──
+const monthLabels    = {!! json_encode($monthLabels->values()) !!};
+const monthDeposits  = {!! json_encode($monthlyDeposits->values()) !!};
+const monthWithdraws = {!! json_encode($monthlyWithdrawals->values()) !!};
+const monthEarnings  = {!! json_encode($monthlyEarnings->values()) !!};
+const monthUsers     = {!! json_encode($monthlyUsers->values()) !!};
 
-// Close sidebar when overlay is clicked
-sidebarOverlay.addEventListener('click', function() {
-  sidebar.classList.remove('active');
-  sidebarOverlay.classList.remove('active');
-});
+const chartDefaults = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { labels: { color: '#888', font: { size: 12 } } } },
+  scales: {
+    y: { grid: { color: '#1a1a1a' }, ticks: { color: '#666' } },
+    x: { grid: { display: false }, ticks: { color: '#666' } }
+  }
+};
 
-// Close sidebar when a nav link is clicked (on mobile)
-const navLinks = document.querySelectorAll('.nav-link');
-navLinks.forEach(link => {
-  link.addEventListener('click', function() {
-    if (window.innerWidth <= 768) {
-      sidebar.classList.remove('active');
-      sidebarOverlay.classList.remove('active');
-    }
-  });
-});
-
-// Revenue vs Withdrawals Chart
-const ctx1 = document.getElementById('revenueVsWithdrawalChart').getContext('2d');
-new Chart(ctx1, {
+// ── DEPOSITS vs WITHDRAWALS vs EARNINGS ──
+new Chart(document.getElementById('revenueChart').getContext('2d'), {
   type: 'bar',
   data: {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    datasets: [{
-      label: 'Deposits',
-      data: [65000, 72000, 89000, 105000, 98000, 112000, 134000, 145000, 128000, 156000, 172000, 189000],
-      backgroundColor: 'rgba(34, 197, 94, 0.6)',
-      borderColor: '#22c55e',
-      borderWidth: 1
-    }, {
-      label: 'Withdrawals',
-      data: [-42000, -51000, -68000, -75000, -62000, -88000, -95000, -102000, -89000, -110000, -125000, -132000],
-      backgroundColor: 'rgba(239, 68, 68, 0.6)',
-      borderColor: '#ef4444',
-      borderWidth: 1
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      y: { 
-        beginAtZero: true, 
-        grid: { color: '#222' },
-        ticks: { color: '#ccc' }
+    labels: monthLabels,
+    datasets: [
+      {
+        label: 'Deposits',
+        data: monthDeposits,
+        backgroundColor: 'rgba(34,197,94,.5)',
+        borderColor: '#22c55e',
+        borderWidth: 1,
+        borderRadius: 4,
       },
-      x: { 
-        grid: { display: false },
-        ticks: { color: '#ccc' }
+      {
+        label: 'Withdrawals',
+        data: monthWithdraws,
+        backgroundColor: 'rgba(239,68,68,.5)',
+        borderColor: '#ef4444',
+        borderWidth: 1,
+        borderRadius: 4,
+      },
+      {
+        label: 'Earnings Paid',
+        data: monthEarnings,
+        backgroundColor: 'rgba(245,158,11,.5)',
+        borderColor: '#f59e0b',
+        borderWidth: 1,
+        borderRadius: 4,
       }
-    },
-    plugins: { 
-      legend: { labels: { color: '#ccc' } }
-    }
-  }
+    ]
+  },
+  options: { ...chartDefaults }
 });
 
-// User Registration Trend (Line Chart)
-const ctx2 = document.getElementById('userGrowthChart').getContext('2d');
-new Chart(ctx2, {
+// ── USER GROWTH LINE ──
+new Chart(document.getElementById('userChart').getContext('2d'), {
   type: 'line',
   data: {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    labels: monthLabels,
     datasets: [{
       label: 'New Users',
-      data: [420, 580, 720, 890, 950, 1120, 1340, 1450, 1280, 1560, 1720, 1890],
+      data: monthUsers,
       borderColor: '#3b82f6',
-      backgroundColor: 'rgba(59, 130, 246, 0.2)',
-      borderWidth: 3,
+      backgroundColor: 'rgba(59,130,246,.15)',
+      borderWidth: 2,
       tension: 0.4,
       fill: true,
       pointBackgroundColor: '#3b82f6',
-      pointBorderColor: '#fff',
+      pointBorderColor: '#000',
       pointBorderWidth: 2,
       pointRadius: 5
     }]
   },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      y: { 
-        beginAtZero: true, 
-        grid: { color: '#222' },
-        ticks: { color: '#ccc' }
-      },
-      x: { 
-        grid: { display: false },
-        ticks: { color: '#ccc' }
-      }
-    },
-    plugins: { 
-      legend: { labels: { color: '#ccc' } }
-    }
-  }
+  options: { ...chartDefaults }
 });
 </script>
-
 </body>
 </html>

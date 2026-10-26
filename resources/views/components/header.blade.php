@@ -47,7 +47,7 @@
 
           <!-- Markets -->
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle {{ request()->is('forex*','cryptos*','shares*','metals','Indices*','energies*') ? 'active' : '' }}" href="#" data-bs-toggle="dropdown">
+            <a class="nav-link dropdown-toggle {{ request()->is('forex*','cryptos*','shares*','metals','indices*','energies*') ? 'active' : '' }}" href="#" data-bs-toggle="dropdown">
               Markets
             </a>
             <ul class="dropdown-menu">
@@ -66,7 +66,7 @@
               Trading
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item {{ request()->routeIs('platform ') ? 'active' : '' }}" href="{{ route('platform') }}">Platform</a></li>
+              <li><a class="dropdown-item {{ request()->routeIs('platform') ? 'active' : '' }}" href="{{ route('platform') }}">Platform</a></li>
               <li><a class="dropdown-item {{ request()->routeIs('swaps') ? 'active' : '' }}" href="{{ route('swaps') }}">Swaps</a></li>
               <li><a class="dropdown-item {{ request()->routeIs('spreads') ? 'active' : '' }}" href="{{ route('spreads') }}">Spreads & Commissions</a></li>
               <li><a class="dropdown-item {{ request()->routeIs('pamm') ? 'active' : '' }}" href="{{ route('pamm') }}">PAMM</a></li>

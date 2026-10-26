@@ -63,9 +63,7 @@
       background: var(--dark2); border: 1px solid var(--border);
       border-radius: 10px; padding: 0.5rem;
     }
-    .table{
-        bg:var(--dark);
-    }
+    .table { --bs-table-bg: transparent; color: rgba(255,255,255,0.85); }
     .dropdown-item {
       color: var(--muted); font-size: 0.82rem; letter-spacing: 0.05em;
       border-radius: 6px; padding: 0.55rem 0.85rem; transition: all 0.15s;

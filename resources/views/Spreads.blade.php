@@ -99,9 +99,7 @@
         radial-gradient(ellipse 38% 48% at 4% 78%, rgba(16,185,129,0.04) 0%, transparent 55%),
         radial-gradient(ellipse 28% 32% at 90% 10%, rgba(52,211,153,0.04) 0%, transparent 50%);
     }
-    .table{
-        bg:var(--dark);
-    }
+    .table { --bs-table-bg: transparent; color: rgba(255,255,255,0.85); }
     .grid-overlay {
       position: absolute; inset: 0; pointer-events: none;
       background-image:

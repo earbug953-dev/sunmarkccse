@@ -371,9 +371,7 @@
     .footer-link:hover { color: #fff; }
     .footer-bottom { border-top: 1px solid var(--border); padding: 1.4rem 0; }
     .footer-bottom p { font-size: 0.75rem; color: rgba(255,255,255,0.25); margin: 0; }
-    .table{
-        bg:var(--dark);
-    }
+    .table { --bs-table-bg: transparent; color: rgba(255,255,255,0.85); }
     /* ── ANIMATIONS ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(28px); }

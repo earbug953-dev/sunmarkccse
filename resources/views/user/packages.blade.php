@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>Investment Plans - SUNHILL</title>
+  <title>Investment Plans - Tesla Invest</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
@@ -202,7 +202,7 @@
 
 <aside class="sidebar" id="sidebar">
   <a href="{{ route('user.dashboard') }}" class="sidebar-brand">
-    <img src="{{ asset('images/logo.png') }}" width="50%" height="50" alt="SUNHILL">
+    <img src="{{ asset('images/logo.png') }}" width="50%" height="50" alt="Tesla Invest">
   </a>
   <nav class="mt-4">
     <ul class="nav flex-column">
@@ -464,7 +464,7 @@
 </main>
 
 <footer style="background:#000;text-align:center;padding:1.5rem;border-top:1px solid #111;color:#333;font-size:.82rem;">
-  <span id="yr"></span> &copy; SUNHILL. All rights reserved.
+  <span id="yr"></span> &copy; Tesla Invest. All rights reserved.
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

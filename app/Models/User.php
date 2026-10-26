@@ -87,7 +87,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isOnline()
     {
-        return $this->last_seen && $this->last_seen->gt(now()->subMinutes(5));
+        return $this->last_seen && $this->last_seen->gt(now()->subMinutes(1));
     }
 
     // total blance of all users apart from admin

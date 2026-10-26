@@ -67,7 +67,7 @@ class InvestmentController extends Controller
             'total_earned'    => 0,   // starts at 0 — cron grows this
             'expected_return' => round($amount * (1 + $package->total_return / 100), 2),
             'days_remaining'  => $package->duration_days,
-            'ends_at'         => now()->addDays($package->duration_days),
+            'ends_at'         => now()->endOfDay()->addDays($package->duration_days - 1),
             'status'          => 'active',
         ]);
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Deposit;
+use App\Models\Investment;
 use App\Models\Package;
 use App\Models\User;
 use App\Models\Withdrawal;
@@ -14,7 +15,10 @@ class AdminController extends Controller
     public function index() {
         $user = auth()->user();
         $deposit = Deposit::totalDeposits();
-        return view('admin.dashboard', compact('user', 'deposit'));
+        $investments = Investment::with(['user', 'package'])
+                             ->latest()
+                             ->get();
+        return view('admin.dashboard', compact('user', 'deposit','investments'));
     }
 
     public function users() {
@@ -45,11 +49,16 @@ class AdminController extends Controller
     }
 
     public function packages()
-    {
-        $packages = Package::orderBy('min_investment', 'asc')->paginate(3);
+{
+    $packages = Package::orderBy('min_investment')->paginate(10);
 
-        return view('admin.packages', compact('packages'));
-    }
+    // All investments with user + package loaded
+    $investments = Investment::with(['user', 'package'])
+                             ->latest()
+                             ->get();
+
+    return view('admin.packages', compact('packages', 'investments'));
+}
 
     public function transactions() {
         $transactions = Auth::user()->transactions()->latest()->get();
@@ -60,8 +69,5 @@ class AdminController extends Controller
         return view('admin.reports');
     }
 
-    public function settings() {
-        $user = User::where('id',Auth::id())->first();
-        return view('admin.settings', compact('user'));
-    }
+
 }

@@ -26,9 +26,7 @@
       --rose-dim: rgba(244,63,94,0.10);
       --red: #e31937;
     }
-.table{
-        bg:var(--dark);
-    }
+  .table { --bs-table-bg: transparent; color: rgba(255,255,255,0.85); }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {

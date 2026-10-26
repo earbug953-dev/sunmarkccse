@@ -70,7 +70,6 @@
     /* ─────────────────────────────── NAVBAR */
     .navbar {
       background: rgba(12,12,14,0.94);
-      backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
       padding: 1.1rem 0;
     }
@@ -497,6 +496,7 @@
     }
     .seen-logo-text:hover { color: rgba(255,255,255,0.55); }
 
+    .table { --bs-table-bg: transparent; color: rgba(255,255,255,0.85); }
     /* ── CTA BAND */
     .cta-band {
       background: linear-gradient(135deg, rgba(227,25,55,0.09) 0%, transparent 55%), var(--dark3);

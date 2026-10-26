@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Dashboard - SUNHILL</title>
+  <title>Admin Dashboard - TESLA</title>
 
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -423,7 +423,7 @@
             <h5 class="fw-bold mb-0">Active Plans</h5>
             <i class="bi bi-rocket-takeoff-fill stat-icon text-warning"></i>
           </div>
-          <h2 class="display-6 fw-bold mb-1">3,291</h2>
+          <h2 class="display-6 fw-bold mb-1">{{ $investments->where('status','active')->count() }}</h2>
           <p class="text-warning small mb-0">89 new today</p>
         </div>
       </div>
@@ -500,17 +500,17 @@
     <!-- Quick Actions -->
     <div class="row g-4 mt-5">
       <div class="col-md-4">
-        <a href="#" class="btn btn-outline-danger w-100 py-4 fs-5 fw-bold">
+        <a href="{{ url('admin/withdrawals') }}" class="btn btn-outline-danger w-100 py-4 fs-5 fw-bold">
           <i class="bi bi-cash-stack me-2 fs-3"></i> Review Withdrawals
         </a>
       </div>
       <div class="col-md-4">
-        <a href="#" class="btn btn-outline-success w-100 py-4 fs-5 fw-bold">
+        <a href="{{ url('admin/deposits') }}" class="btn btn-outline-success w-100 py-4 fs-5 fw-bold">
           <i class="bi bi-currency-dollar me-2 fs-3"></i> Approve Deposits
         </a>
       </div>
       <div class="col-md-4">
-        <a href="#" class="btn btn-outline-primary w-100 py-4 fs-5 fw-bold">
+        <a href="{{ url('admin/users') }}" class="btn btn-outline-primary w-100 py-4 fs-5 fw-bold">
           <i class="bi bi-people-fill me-2 fs-3"></i> Manage Users
         </a>
       </div>

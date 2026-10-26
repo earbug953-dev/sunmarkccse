@@ -1,13 +1,16 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminReportController;
+use App\Http\Controllers\Admin\AdminSettingsController;
+use App\Http\Controllers\Admin\AdminTransactionController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DepositsController;
 use App\Http\Controllers\InvestmentController;
 use App\Http\Controllers\PackagesController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserDashboardController;
+use App\Http\Controllers\UserTransactionController;
 use App\Http\Controllers\WithdrawalController;
 use App\Models\Withdrawal;
 use Illuminate\Support\Facades\Route;
@@ -71,10 +74,15 @@ Route::get('/trade-certificate', function () {
 
 
 Route::prefix('user')->middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
+    Route::get('/dashboard', [UserDashboardController::class, 'index'])
+         ->name('user.dashboard');
+
 
     Route::get('/deposit', function () {
-        return view('user.deposit');
+        $gateways = \App\Models\PaymentGateway::where('active', true)
+                                          ->orderBy('sort_order')
+                                          ->get();
+        return view('user.deposit', compact('gateways'));
     })->name('user.deposit');
 
     Route::get('/packages', [InvestmentController::class, 'packages'])
@@ -88,7 +96,8 @@ Route::prefix('user')->middleware(['auth', 'verified'])->group(function () {
     Route::post('/earnings/claim', [InvestmentController::class, 'claimEarnings'])
          ->name('user.earnings.claim');
 
-    Route::get('/transactions', [TransactionController::class, 'index'])->name('user.transactions');
+    Route::get('/transactions', [UserTransactionController::class, 'index'])
+         ->name('user.transactions');
     Route::get('/withdraw', function () {
     $withdrawals = Withdrawal::where('user_id', auth()->id())
         ->latest()
@@ -114,9 +123,24 @@ Route::prefix('/admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/deposits', [AdminController::class, "deposits"])->name('admin.deposits');
     Route::get('/withdrawals', [AdminController::class, "withdrawals"])->name('admin.withdrawals');
     Route::get('/packages', [AdminController::class, "packages"])->name('admin.packages');
-    Route::get('/transactions', [AdminController::class, "transactions"])->name('admin.transactions');
-    Route::get('/reports', [AdminController::class, "reports"])->name('admin.reports');
-    Route::get('/settings', [AdminController::class, "settings"])->name('admin.settings');
+    Route::get('/transactions', [AdminTransactionController::class, 'index'])
+     ->name('admin.transactions');
+    Route::get('reports', [AdminReportController::class, 'index'])
+     ->name('admin.reports');
+
+
+
+
+    // Settings page
+    Route::get('/settings', [AdminSettingsController::class, 'index'])->name('admin.settings');
+
+    // Payment Gateways CRUD
+    Route::post('/settings/gateways',              [AdminSettingsController::class, 'storeGateway'])->name('admin.gateways.store');
+    Route::put('/settings/gateways/{gateway}',     [AdminSettingsController::class, 'updateGateway'])->name('admin.gateways.update');
+    Route::post('/settings/gateways/{gateway}/toggle', [AdminSettingsController::class, 'toggleGateway'])->name('admin.gateways.toggle');
+    Route::delete('/settings/gateways/{gateway}',  [AdminSettingsController::class, 'destroyGateway'])->name('admin.gateways.destroy');
+
+
 
 
     Route::post('/packages/store', [PackagesController::class, "store"])->name('admin.packages.store');

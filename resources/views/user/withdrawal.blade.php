@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Withdraw Funds - SUNHILL</title>
+  <title>Withdraw Funds - Tesla Invest</title>
 
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -391,7 +391,7 @@
 <!-- Sidebar Navigation -->
 <aside class="sidebar" id="sidebar">
   <a href="{{ route('user.dashboard') }}" class="sidebar-brand">
-    <img src="{{ asset('images/logo.png') }}" width="50%" height="50" alt="SUNHILL Logo">
+    <img src="{{ asset('images/logo.png') }}" width="50%" height="50" alt="Tesla Invest Logo">
   </a>
 
   <nav class="mt-4">
@@ -427,7 +427,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ url('/profile') }}">
+        <a class="nav-link" href="{{ url('user/profile') }}">
           <i class="uil uil-user"></i>
           <span>Profile</span>
         </a>
@@ -494,10 +494,10 @@
                 </label>
                 <div class="input-group input-group-lg">
                   <span class="input-group-text">$</span>
-                  <input type="number" 
-                         class="form-control form-control-lg form-control-dark" 
-                         placeholder="0.00" 
-                         min="50" 
+                  <input type="number"
+                         class="form-control form-control-lg form-control-dark"
+                         placeholder="0.00"
+                         min="50"
                          step="0.01"
                          name="amount"
                          required>
@@ -532,10 +532,10 @@
                 <label class="form-label">
                   <i class="bi bi-wallet2 me-1"></i> Wallet / Account Details
                 </label>
-                <input type="text" 
-                       class="form-control form-control-lg form-control-dark" 
-                       placeholder="Enter your BTC / USDT address or bank details" 
-                       name="wallet_details" 
+                <input type="text"
+                       class="form-control form-control-lg form-control-dark"
+                       placeholder="Enter your BTC / USDT address or bank details"
+                       name="wallet_details"
                        required>
                 <small class="text-secondary d-block mt-2">
                   Double-check your wallet address before submitting
